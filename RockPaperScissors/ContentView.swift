@@ -8,8 +8,9 @@
 import SwiftUI
 
 
-var gameTiles = ["Rock", "Paper", "Scissors"]
+var gameTiles = [("Rock", Image("Rock")), ("Paper", Image("Paper")), ("Scissors", Image("Scissors"))]
 var playerCue = "Throw"
+
 
 
 
@@ -19,8 +20,10 @@ struct ContentView: View {
     @State private var playerChoice  = ""
     @State private var winLose = ""
     @State private var score = 0
+    @State private var index = 0
     
     var winDirection = ["Win", "Lose"]
+
     
     func updateScore() {
         if winLose == "Win" {
@@ -34,8 +37,7 @@ struct ContentView: View {
     func gamePlay() {
         
         let newTiles = gameTiles.shuffled()
-        let computerPlay = newTiles.randomElement()
-        
+        let computerPlay = newTiles.randomElement()?.0
         if (computerPlay == "Rock" && playerChoice  == "Paper") || (computerPlay == "Paper" && playerChoice == "Scissors") || (computerPlay == "Scissors" && playerChoice == "Rock") {
             winLose = "Win"
             }
@@ -43,6 +45,7 @@ struct ContentView: View {
             winLose = "Lose"
         }
         updateScore()
+        playerCue = "Throw Again?"
     }
                                                                                                                             
     var body: some View {
@@ -73,11 +76,20 @@ struct ContentView: View {
             VStack {
                 Text("Your Choice:")
                     .padding()
-                Image("Rock")
-                    .resizable()
-                    .frame(width: 100, height: 100)
-                    .padding()
-                
+                Button (action: {
+                    if index == gameTiles.count - 1 {
+                        index = 0
+                    } else {
+                        index += 1
+                    }
+
+                }, label: {
+                    HStack {
+                        Image(gameTiles[index].0)
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                    }
+                })
             }
 
 
@@ -98,8 +110,11 @@ struct ContentView: View {
                 }
             }
             Button("\(playerCue)") {
+                if playerCue == "Throw" {
+                    gamePlay()
+                }
                 showResults.toggle()
-                winLose = "Lose"
+
             }
         }
 
