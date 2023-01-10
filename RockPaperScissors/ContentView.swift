@@ -131,6 +131,7 @@ struct ContentView: View {
             Button("\(playerCue)") {
                 if playerCue == "Throw" {
                     gamePlay()
+                    decisionSet = ""
                 }
                 else {
                     playerCue = "Throw"
