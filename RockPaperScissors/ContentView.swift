@@ -8,23 +8,32 @@
 import SwiftUI
 
 
-var gameTiles = [("Rock", Image("Rock")), ("Paper", Image("Paper")), ("Scissors", Image("Scissors"))]
-var playerCue = "Throw"
+
 
 
 
 
 struct ContentView: View {
+    var gameTiles = [("Rock", Image("Rock")), ("Paper", Image("Paper")), ("Scissors", Image("Scissors"))]
     
+    @State private var playerCue = "Throw"
     @State private var showResults = false
     @State private var playerChoice  = ""
     @State private var winLose = ""
     @State private var score = 0
     @State private var index = 0
+    @State private var computerPlay = ""
+    @State private var decisionSet = "Win"
     
     var winDirection = ["Win", "Lose"]
 
-    
+
+    func initialize() -> String {
+  //      let pickDirection = winDirection.shuffled()
+        
+        return winDirection.randomElement() ?? "Win"
+    }
+            
     func updateScore() {
         if winLose == "Win" {
             score += 1
@@ -35,16 +44,26 @@ struct ContentView: View {
     }
     
     func gamePlay() {
+        decisionSet = initialize()
         
         let newTiles = gameTiles.shuffled()
-        let computerPlay = newTiles.randomElement()?.0
+        computerPlay = newTiles.randomElement()?.0 ?? ""
         if (computerPlay == "Rock" && playerChoice  == "Paper") || (computerPlay == "Paper" && playerChoice == "Scissors") || (computerPlay == "Scissors" && playerChoice == "Rock") {
             winLose = "Win"
             }
         else {
             winLose = "Lose"
         }
+        
+        if (decisionSet == "Win" && winLose == "Win") || (decisionSet == "Lose" && winLose == "Lose")  {
+            winLose = "Win"
+        }
+        else {
+            winLose = "Lose"
+        }
+            
         updateScore()
+
         playerCue = "Throw Again?"
     }
                                                                                                                             
@@ -52,7 +71,6 @@ struct ContentView: View {
         VStack {
             VStack {
                 VStack {
-                    
                     Text("Rock! Paper! Scissors!")
                         .padding()
                         .fontWeight(.bold)
@@ -67,7 +85,7 @@ struct ContentView: View {
             VStack {
                 HStack {
                     Text("To win, you must:")
-                    Text("\(winDirection[0])")
+                    Text("\(decisionSet)")
                         .foregroundColor(.green)
                 }
             }
@@ -82,10 +100,11 @@ struct ContentView: View {
                     } else {
                         index += 1
                     }
+                    playerChoice = gameTiles[index].0
 
                 }, label: {
                     HStack {
-                        Image(gameTiles[index].0)
+                        gameTiles[index].1
                             .resizable()
                             .frame(width: 100, height: 100)
                     }
@@ -98,7 +117,7 @@ struct ContentView: View {
                     Text("Computer Throws:")
                         .padding()
                     HStack {
-                        Image("Scissors")
+                        Image(computerPlay)
                             .resizable()
                             .frame(width: 100, height: 100)
                         Image("\(winLose)")
@@ -112,6 +131,9 @@ struct ContentView: View {
             Button("\(playerCue)") {
                 if playerCue == "Throw" {
                     gamePlay()
+                }
+                else {
+                    playerCue = "Throw"
                 }
                 showResults.toggle()
 
